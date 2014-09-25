@@ -14,7 +14,7 @@ mailer = require('./index')
 
   default_template: 'jade'
 
-  default_language: 'en'
+  default_language: 'en_US'
   languages: _.map fs.readdirSync("#{__dirname}/locale"), (file_name) ->
     return path.basename file_name, '.json'
 
@@ -27,4 +27,4 @@ mailer.sendMail 'sample', 'jysperm@gmail.com',
   language: 'en'
   timezone: 'Asia/Shanghai'
 , (err) ->
-  throw err if err
+  console.log arguments

@@ -35,30 +35,36 @@ parseLanguageCode = (language) ->
 
 module.exports = (options) ->
   options = _.extend default_options, options
-  options.languages = _.map options.languages, parseLanguageCode
+  options.language_infos = _.map options.languages, parseLanguageCode
 
   mailer = nodemailer.createTransport options.account
 
   i18n_data = {}
   priority_cache = {}
 
-  for language in options.languages
-    i18n_data[language] = require "#{options.locale_prefix}/#{language}.json"
+  for language_info in options.language_infos
+    i18n_data[language_info.language] = require "#{options.locale_prefix}/#{language_info.language}.json"
+
+  is_found_default_language = _.find options.language_infos, (language_info) ->
+    return language_info.language == parseLanguageCode(options.default_language).language
+
+  unless is_found_default_language
+    throw new Error 'Default language not found in locale directory'
 
   calcLanguagePriority = (language) ->
-    language = parseLanguageCode language
+    language_info = parseLanguageCode language
 
     result = []
 
-    result.concat _.filter options.languages, (i) ->
-      return i.language == language.language
+    result = result.concat _.filter options.language_infos, (i) ->
+      return i.language == language_info.language
 
-    result.concat _.filter options.languages, (i) ->
-      return i.lang == language.lang
+    result = result.concat _.filter options.language_infos, (i) ->
+      return i.lang == language_info.lang
 
-    result.push options.default_language
+    result.push parseLanguageCode options.default_language
 
-    result.concat options.languages
+    result = result.concat options.language_infos
 
     return _.uniq _.pluck result, 'language'
 
@@ -100,7 +106,7 @@ module.exports = (options) ->
     unless path.extname template_name
       template_name += ".#{options.default_template}"
 
-    engine = path.extname template_name
+    engine = path.extname(template_name).replace '.', ''
     file_path = path.join options.template_prefix, template_name
 
     return {
@@ -131,17 +137,25 @@ module.exports = (options) ->
         return translate name, i18n_options.language
 
       m = ->
-        return moment.apply(@, arguments).locale(language).tz(i18n_options.timezone)
+        return moment.apply(@, arguments).locale(i18n_options.language).tz(i18n_options.timezone)
 
       renderTemplate template_name, _.extend({t: t, m: m}, view_data), (err, mail_body) ->
+        return callback err if err
+
         {file_name} = getTemplateInfo template_name
 
         mailer.sendMail
           from: options.send_from
           to: to_address
-          subject: t "email_title.#{file_name}"
+          subject: t "email_title.#{file_name.replace('.', '-')}"
           html: mail_body
           reply_to: options.reply_to
-        , (err) ->
-          callback err
+        , (err, info) ->
+          if err
+            callback err
+          else if /^\s+250\b/.test info.response
+            callback new Error 'Unknown Error'
+          else
+            callback err, info
+
   }
