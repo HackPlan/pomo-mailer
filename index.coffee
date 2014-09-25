@@ -40,6 +40,7 @@ module.exports = (options) ->
   mailer = nodemailer.createTransport options.account
 
   i18n_data = {}
+  template_cache = {}
   priority_cache = {}
 
   for language_info in options.language_infos
@@ -115,21 +116,21 @@ module.exports = (options) ->
       file_path: file_path
     }
 
-  renderTemplate = (template_name, view_data, callback) ->
-    {engine, file_path} = getTemplateInfo template_name
+  getTemplate = (template_file, callback) ->
+    if template_cache[template_file]
+      return callback null, template_cache[template_file]
 
+    fs.readFile template_file, callback
+
+  renderTemplate = (engine, template_source, view_data) ->
     if engine == 'jade'
-      jade.renderFile file_path, view_data, (err, content) ->
-        callback err, content
+      return jade.render template_source, view_data
 
     else if engine == 'html'
-      fs.readFile file_path, (err, content) ->
-        return callback err if err
-        content = _.template(content) view_data
-        callback null, content
+      return _.template(template_source) view_data
 
     else
-      callback new Error 'Unknown Engine'
+      throw new Error 'Unknown Engine'
 
   return {
     sendMail: (template_name, to_address, view_data, i18n_options, callback) ->
@@ -139,10 +140,12 @@ module.exports = (options) ->
       m = ->
         return moment.apply(@, arguments).locale(i18n_options.language).tz(i18n_options.timezone)
 
-      renderTemplate template_name, _.extend({t: t, m: m}, view_data), (err, mail_body) ->
+      {engine, file_path, file_name} = getTemplateInfo template_name
+
+      getTemplate file_path, (err, template_source) ->
         return callback err if err
 
-        {file_name} = getTemplateInfo template_name
+        mail_body = renderTemplate engine, template_source, _.extend({t: t, m: m}, view_data)
 
         mailer.sendMail
           from: options.send_from
