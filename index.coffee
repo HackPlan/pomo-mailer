@@ -134,8 +134,14 @@ module.exports = (options) ->
 
   return {
     sendMail: (template_name, to_address, view_data, i18n_options, callback) ->
-      t = (name) ->
-        return translate name, i18n_options.language
+      t = (name, payload) ->
+        result = translate name, i18n_options.language
+
+        if _.isObject payload
+          for k, v of payload
+            result = result.replace "__#{k}__", v
+
+        return result
 
       m = ->
         return moment.apply(@, arguments).locale(i18n_options.language).tz(i18n_options.timezone)
