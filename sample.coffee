@@ -21,7 +21,7 @@ mailer = require('./index')
   template_prefix: "#{__dirname}/template"
   locale_prefix: "#{__dirname}/locale"
 
-mailer.sendMail 'test_notice', 'jysperm@gmail.com',
+mailer.sendMail 'sample', 'jysperm@gmail.com',
   body: 'Test Notice'
 ,
   language: 'en'
