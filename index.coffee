@@ -132,19 +132,30 @@ module.exports = (options) ->
     else
       throw new Error 'Unknown Engine'
 
+  buildT = (i18n_options) ->
+    return  (name, payload) ->
+      result = translate name, i18n_options.language
+
+      if _.isObject payload
+        for k, v of payload
+          result = result.replace "__#{k}__", v
+
+      return result
+
+  buildM = (i18n_options) ->
+    return ->
+      return moment.apply(@, arguments).locale(i18n_options.language).tz(i18n_options.timezone)
+
   return {
+    i18n: (i18n_options) ->
+      buildT i18n_options
+
+    moment: (i18n_options) ->
+      buildM i18n_options
+
     sendMail: (template_name, to_address, view_data, i18n_options, callback) ->
-      t = (name, payload) ->
-        result = translate name, i18n_options.language
-
-        if _.isObject payload
-          for k, v of payload
-            result = result.replace "__#{k}__", v
-
-        return result
-
-      m = ->
-        return moment.apply(@, arguments).locale(i18n_options.language).tz(i18n_options.timezone)
+      t = buildT i18n_options
+      m = buildM i18n_options
 
       {engine, file_path, file_name} = getTemplateInfo template_name
 
