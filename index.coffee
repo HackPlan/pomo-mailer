@@ -23,11 +23,12 @@ default_options =
   template_prefix: "./template"
   locale_prefix: "./locale"
 
-parseLanguageCode = (language) ->
-  language = language.toLowerCase().replace '-', '_'
+parseLanguageCode = (original_language) ->
+  language = original_language.toLowerCase().replace '-', '_'
   [lang, country] = language.split '_'
 
   return {
+    original: original_language
     language: language
     lang: lang
     country: country
@@ -37,14 +38,14 @@ module.exports = (options) ->
   options = _.extend default_options, options
   options.language_infos = _.map options.languages, parseLanguageCode
 
+  for language_info in options.language_infos
+    i18n_data[language_info.language] = require "#{options.locale_prefix}/#{language_info.original}.json"
+
   mailer = nodemailer.createTransport options.account
 
   i18n_data = {}
   template_cache = {}
   priority_cache = {}
-
-  for language_info in options.language_infos
-    i18n_data[language_info.language] = require "#{options.locale_prefix}/#{language_info.language}.json"
 
   is_found_default_language = _.find options.language_infos, (language_info) ->
     return language_info.language == parseLanguageCode(options.default_language).language
