@@ -1,12 +1,12 @@
 {
   "name": "pomo-mailer",
   "version": "0.1.0",
-  "description": "pomo-mailer",
-  "homepage": "http://xuxian.jimu.in/node/pomo-mailer",
+  "description": "Simple mailer with i18n and template engine.",
+  "homepage": "https://github.com/hackplan/github-commit-ical",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@xuxian.jimu.in:node/pomo-mailer.git"
+    "url": "https://github.com/hackplan/github-commit-ical.git"
   },
   "contributors": [
     {
