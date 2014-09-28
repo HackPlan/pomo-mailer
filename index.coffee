@@ -164,7 +164,7 @@ module.exports = (mailer_options) ->
         mailer.sendMail
           from: options.send_from
           to: to_address
-          subject: t "email_title.#{file_name.replace('.', '-')}"
+          subject: t "email_title.#{file_name.replace('.', '-')}", view_data
           html: mail_body
           reply_to: options.reply_to
         , (err, info) ->
