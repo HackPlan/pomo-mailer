@@ -22,9 +22,9 @@ mailer = require('./index')
   locale_prefix: "#{__dirname}/locale"
 
 mailer.sendMail 'sample', 'jysperm@gmail.com',
-  body: 'Test Notice'
+  id: 'EM42'
 ,
-  language: 'en'
+  language: 'zh_TW'
   timezone: 'Asia/Shanghai'
   reply_to: ''
   #send_from: 'Mopodofo <robot@mopodofo.com>'

@@ -1,5 +1,6 @@
 {
   "email_title": {
-    "sample-jade": "示例邮件"
-  }
+    "sample-jade": "[__id__] 示例邮件"
+  },
+  "welcome": "世界，你好"
 }
