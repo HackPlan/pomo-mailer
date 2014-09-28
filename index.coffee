@@ -34,21 +34,21 @@ parseLanguageCode = (original_language) ->
     country: country
   }
 
-module.exports = (options) ->
-  options = _.extend default_options, options
-  options.language_infos = _.map options.languages, parseLanguageCode
+module.exports = (mailer_options) ->
+  mailer_options = _.extend default_options, mailer_options
+  mailer_options.language_infos = _.map mailer_options.languages, parseLanguageCode
 
-  mailer = nodemailer.createTransport options.account
+  mailer = nodemailer.createTransport mailer_options.account
 
   i18n_data = {}
   template_cache = {}
   priority_cache = {}
 
-  for language_info in options.language_infos
-    i18n_data[language_info.language] = require "#{options.locale_prefix}/#{language_info.original}.json"
+  for language_info in mailer_options.language_infos
+    i18n_data[language_info.language] = require "#{mailer_options.locale_prefix}/#{language_info.original}.json"
 
-  is_found_default_language = _.find options.language_infos, (language_info) ->
-    return language_info.language == parseLanguageCode(options.default_language).language
+  is_found_default_language = _.find mailer_options.language_infos, (language_info) ->
+    return language_info.language == parseLanguageCode(mailer_options.default_language).language
 
   unless is_found_default_language
     throw new Error 'Default language not found in locale directory'
@@ -58,15 +58,15 @@ module.exports = (options) ->
 
     result = []
 
-    result = result.concat _.filter options.language_infos, (i) ->
+    result = result.concat _.filter mailer_options.language_infos, (i) ->
       return i.language == language_info.language
 
-    result = result.concat _.filter options.language_infos, (i) ->
+    result = result.concat _.filter mailer_options.language_infos, (i) ->
       return i.lang == language_info.lang
 
-    result.push parseLanguageCode options.default_language
+    result.push parseLanguageCode mailer_options.default_language
 
-    result = result.concat options.language_infos
+    result = result.concat mailer_options.language_infos
 
     return _.uniq _.pluck result, 'language'
 
@@ -106,10 +106,10 @@ module.exports = (options) ->
 
   getTemplateInfo = (template_name) ->
     unless path.extname template_name
-      template_name += ".#{options.default_template}"
+      template_name += ".#{mailer_options.default_template}"
 
     engine = path.extname(template_name).replace '.', ''
-    file_path = path.join options.template_prefix, template_name
+    file_path = path.join mailer_options.template_prefix, template_name
 
     return {
       engine: engine
@@ -133,30 +133,26 @@ module.exports = (options) ->
     else
       throw new Error 'Unknown Engine'
 
-  buildT = (i18n_options) ->
-    return  (name, payload) ->
-      result = translate name, i18n_options.language
-
-      if _.isObject payload
-        for k, v of payload
-          result = result.replace "__#{k}__", v
-
-      return result
-
-  buildM = (i18n_options) ->
-    return ->
-      return moment.apply(@, arguments).locale(i18n_options.language).tz(i18n_options.timezone)
-
   return {
-    i18n: (i18n_options) ->
-      buildT i18n_options
+    i18n: (options) ->
+      return  (name, payload) ->
+        result = translate name, options.language
 
-    moment: (i18n_options) ->
-      buildM i18n_options
+        if _.isObject payload
+          for k, v of payload
+            result = result.replace "__#{k}__", v
 
-    sendMail: (template_name, to_address, view_data, i18n_options, callback) ->
-      t = buildT i18n_options
-      m = buildM i18n_options
+        return result
+
+    moment: (options) ->
+      return ->
+        return moment.apply(@, arguments).locale(options.language).tz(options.timezone)
+
+    sendMail: (template_name, to_address, view_data, options, callback) ->
+      options = _.extend mailer_options, options
+
+      t = @i18n options
+      m = @moment options
 
       {engine, file_path, file_name} = getTemplateInfo template_name
 

@@ -26,5 +26,7 @@ mailer.sendMail 'sample', 'jysperm@gmail.com',
 ,
   language: 'en'
   timezone: 'Asia/Shanghai'
+  reply_to: ''
+  #send_from: 'Mopodofo <robot@mopodofo.com>'
 , (err) ->
   console.log arguments
