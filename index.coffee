@@ -128,7 +128,7 @@ module.exports = (mailer_options) ->
       return jade.render template_source, view_data
 
     else if engine == 'html'
-      return _.template(template_source) view_data
+      return _.template(template_source.toString()) view_data
 
     else
       throw new Error 'Unknown Engine'
