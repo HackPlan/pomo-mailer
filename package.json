@@ -2,11 +2,11 @@
   "name": "pomo-mailer",
   "version": "0.1.0",
   "description": "Simple mailer with i18n and template engine.",
-  "homepage": "https://github.com/hackplan/github-commit-ical",
+  "homepage": "https://github.com/hackplan/pomo-mailer",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hackplan/github-commit-ical.git"
+    "url": "https://github.com/hackplan/pomo-mailer.git"
   },
   "contributors": [
     {
