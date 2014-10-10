@@ -1,3 +1,8 @@
+## v0.1.2(2014.10.10)
+
+* Fix dependence: moment-timezone.
+* Improve some code.
+
 ## v0.1.1(2014.10.8)
 
 * Add `index.js` for project that not write in Coffee Script.

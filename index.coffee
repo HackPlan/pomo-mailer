@@ -121,14 +121,15 @@ module.exports = (mailer_options) ->
     if template_cache[template_file]
       return callback null, template_cache[template_file]
 
-    fs.readFile template_file, callback
+    fs.readFile template_file, (err, template_source) ->
+      callback err, template_source.toString()
 
   renderTemplate = (engine, template_source, view_data) ->
     if engine == 'jade'
       return jade.render template_source, view_data
 
     else if engine == 'html'
-      return _.template(template_source.toString()) view_data
+      return _.template(template_source) view_data
 
     else
       throw new Error 'Unknown Engine'
