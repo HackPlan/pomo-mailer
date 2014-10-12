@@ -35,7 +35,7 @@ parseLanguageCode = (original_language) ->
   }
 
 module.exports = (mailer_options) ->
-  mailer_options = _.extend default_options, mailer_options
+  mailer_options = _.extend _.clone(default_options), mailer_options
   mailer_options.language_infos = _.map mailer_options.languages, parseLanguageCode
 
   mailer = nodemailer.createTransport mailer_options.account
@@ -150,7 +150,7 @@ module.exports = (mailer_options) ->
         return moment.apply(@, arguments).locale(options.language).tz(options.timezone)
 
     sendMail: (template_name, to_address, view_data, options, callback) ->
-      options = _.extend mailer_options, options
+      options = _.extend _.clone(mailer_options), options
 
       t = @i18n options
       m = @moment options
@@ -162,13 +162,14 @@ module.exports = (mailer_options) ->
 
         mail_body = renderTemplate engine, template_source, _.extend({t: t, m: m}, view_data)
 
-        mailer.sendMail
+        options = _.extend options,
           from: options.send_from
           to: to_address
           subject: t "email_title.#{file_name.replace('.', '-')}", view_data
           html: mail_body
           replyTo: options.reply_to
-        , (err, info) ->
+
+        mailer.sendMail options, (err, info) ->
           if err
             callback err
           else if /^\s+250\b/.test info.response
