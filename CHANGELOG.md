@@ -1,3 +1,7 @@
+## v0.1.4(2014.10.20)
+
+* add option `strict_fallback`
+
 ## v0.1.3(2014.10.13)
 
 * Fix bugs about _.extend

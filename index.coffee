@@ -20,6 +20,8 @@ default_options =
   default_language: 'en'
   languages: ['en', 'zh_CN', 'zh_TW', 'jp']
 
+  strict_fallback: true
+
   template_prefix: "./template"
   locale_prefix: "./locale"
 
@@ -66,7 +68,8 @@ module.exports = (mailer_options) ->
 
     result.push parseLanguageCode mailer_options.default_language
 
-    result = result.concat mailer_options.language_infos
+    unless mailer_options.strict_fallback
+      result = result.concat mailer_options.language_infos
 
     return _.uniq _.pluck result, 'language'
 
