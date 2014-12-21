@@ -1,6 +1,12 @@
+## v0.1.5(2014.12.22)
+
+* Add some error handling
+* Will not handling interpolation if value is undefined
+* Update README.md
+
 ## v0.1.4(2014.10.20)
 
-* add option `strict_fallback`
+* Add option `strict_fallback`
 
 ## v0.1.3(2014.10.13)
 

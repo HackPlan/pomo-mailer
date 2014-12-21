@@ -13,20 +13,18 @@ default_options =
       pass: 'postmark-api-token'
 
   send_from: 'Pomotodo <robot@pomotodo.com>'
-  #reply_to: 'support@pomotodo.com'
 
   default_template: 'jade'
-
   default_language: 'en'
-  languages: ['en', 'zh_CN', 'zh_TW', 'jp']
 
+  languages: ['en']
   strict_fallback: true
 
-  template_prefix: "./template"
-  locale_prefix: "./locale"
+  template_prefix: './template'
+  locale_prefix: './locale'
 
 parseLanguageCode = (original_language) ->
-  language = original_language.toLowerCase().replace '-', '_'
+  language = (original_language ? '').toLowerCase().replace '-', '_'
   [lang, country] = language.split '_'
 
   return {
@@ -125,7 +123,7 @@ module.exports = (mailer_options) ->
       return callback null, template_cache[template_file]
 
     fs.readFile template_file, (err, template_source) ->
-      callback err, template_source.toString()
+      callback err, template_source?.toString()
 
   renderTemplate = (engine, template_source, view_data) ->
     if engine == 'jade'
@@ -144,7 +142,8 @@ module.exports = (mailer_options) ->
 
         if _.isObject payload
           for k, v of payload
-            result = result.replace "__#{k}__", v
+            unless v == undefined
+              result = result.replace "__#{k}__", v
 
         return result
 
