@@ -44,12 +44,12 @@ Mailer:
 
 * `account` Same with nodemailer:
 
-    {
-      service: 'Postmark'
-      auth:
-        user: 'postmark-api-token'
-        pass: 'postmark-api-token'
-    }
+        {
+          service: 'Postmark'
+          auth:
+            user: 'postmark-api-token'
+            pass: 'postmark-api-token'
+        }
 
 * `send_from` Such as `Pomotodo <robot@pomotodo.com>`
 * `default_template` jade or html(underscore), default to `jade`
