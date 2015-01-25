@@ -1,3 +1,7 @@
+## v0.1.6(2015.1.26)
+
+* Support directly pass title and html, without template
+
 ## v0.1.5(2014.12.22)
 
 * Add some error handling

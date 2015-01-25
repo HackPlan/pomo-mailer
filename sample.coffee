@@ -2,7 +2,7 @@ path = require 'path'
 fs = require 'fs'
 _ = require 'underscore'
 
-mailer = require('pomo-mailer')
+mailer = (require './index')
   account:
     service: 'Postmark'
     auth:

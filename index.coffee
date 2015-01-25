@@ -154,21 +154,12 @@ module.exports = (mailer_options) ->
     sendMail: (template_name, to_address, view_data, options, callback) ->
       options = _.extend _.clone(mailer_options), options
 
-      t = @i18n options
-      m = @moment options
-
-      {engine, file_path, file_name} = getTemplateInfo template_name
-
-      getTemplate file_path, (err, template_source) ->
-        return callback err if err
-
-        mail_body = renderTemplate engine, template_source, _.extend({t: t, m: m}, view_data)
-
+      send = (title, html) ->
         options = _.extend options,
           from: options.send_from
           to: to_address
-          subject: t "email_title.#{file_name.replace('.', '-')}", view_data
-          html: mail_body
+          subject: title
+          html: html
           replyTo: options.reply_to
 
         mailer.sendMail options, (err, info) ->
@@ -178,5 +169,22 @@ module.exports = (mailer_options) ->
             callback new Error 'Unknown Error'
           else
             callback err, info
+
+      if template_name
+        t = @i18n options
+        m = @moment options
+
+        {engine, file_path, file_name} = getTemplateInfo template_name
+
+        getTemplate file_path, (err, template_source) ->
+          return callback err if err
+
+          mail_title = t "email_title.#{file_name.replace('.', '-')}", view_data
+          mail_body = renderTemplate engine, template_source, _.extend({t: t, m: m}, view_data)
+
+          send mail_title, mail_body
+
+      else
+        send options.title, options.html
 
   }
