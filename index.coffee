@@ -1,4 +1,5 @@
 nodemailer = require 'nodemailer'
+request = require 'request'
 moment = require 'moment-timezone'
 path = require 'path'
 jade = require 'jade'
@@ -11,6 +12,10 @@ default_options =
     auth:
       user: 'postmark-api-token'
       pass: 'postmark-api-token'
+
+  sender:
+    url: 'http://127.0.0.1/queue'
+    token: 'pomo-sender-token'
 
   send_from: 'Pomotodo <robot@pomotodo.com>'
 
@@ -151,24 +156,8 @@ module.exports = (mailer_options) ->
       return ->
         return moment.apply(@, arguments).locale(options.language).tz(options.timezone)
 
-    sendMail: (template_name, to_address, view_data, options, callback) ->
+    renderMail: (template_name, view_data, options, callback) ->
       options = _.extend _.clone(mailer_options), options
-
-      send = (title, html) ->
-        options = _.extend options,
-          from: options.send_from
-          to: to_address
-          subject: title
-          html: html
-          replyTo: options.reply_to
-
-        mailer.sendMail options, (err, info) ->
-          if err
-            callback err
-          else if /^\s+250\b/.test info.response
-            callback new Error 'Unknown Error'
-          else
-            callback err, info
 
       if template_name
         t = @i18n options
@@ -182,9 +171,54 @@ module.exports = (mailer_options) ->
           mail_title = t "email_title.#{file_name.replace('.', '-')}", view_data
           mail_body = renderTemplate engine, template_source, _.extend({t: t, m: m}, view_data)
 
-          send mail_title, mail_body
+          callback null,
+            subject: mail_title
+            html: mail_body
 
       else
-        send options.title, options.html
+        callback null,
+          subject: options.title
+          html: options.html
+
+    pushToSender: (template_name, to_address, view_data, options, callback) ->
+      @renderMail template_name, view_data, options, (err, {subject, html}) ->
+        options = _.extend _.clone(mailer_options), options
+
+        request
+          method: 'POST'
+          url: options.sender.url + '/push_html'
+          headers:
+            'X-Token': options.sender.token
+          json:
+            to_address: to_address
+            title: subject
+            html: html
+            timezone: options?.timezone
+            language: options?.language
+
+        , (err, res, body) ->
+          if err
+            callback err
+          else if ! (200 <= res.statusCode < 300)
+            callback res.statusCode
+          else
+            callback err, body
+
+    sendMail: (template_name, to_address, view_data, options, callback) ->
+      @renderMail template_name, view_data, options, (err, {subject, html}) ->
+        options = _.extend _.clone(mailer_options), options,
+          from: options.send_from
+          to: to_address
+          subject: subject
+          html: html
+          replyTo: options.reply_to
+
+        mailer.sendMail options, (err, info) ->
+          if err
+            callback err
+          else if /^\s+250\b/.test info.response
+            callback new Error 'Unknown Error'
+          else
+            callback err, info
 
   }

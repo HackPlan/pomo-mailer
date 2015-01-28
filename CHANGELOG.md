@@ -1,3 +1,8 @@
+## v0.1.7(2015.1.28)
+
+* Support push to pomo-sender HTTP-API
+* Add method `renderMail`
+
 ## v0.1.6(2015.1.26)
 
 * Support directly pass title and html, without template
