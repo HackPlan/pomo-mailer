@@ -1,3 +1,7 @@
+## v0.1.8(2015.3.13)
+
+* Fixbugs about options of sendMail
+
 ## v0.1.7(2015.1.28)
 
 * Support push to pomo-sender HTTP-API

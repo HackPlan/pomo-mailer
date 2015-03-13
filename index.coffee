@@ -206,11 +206,16 @@ module.exports = (mailer_options) ->
 
     sendMail: (template_name, to_address, view_data, options, callback) ->
       @renderMail template_name, view_data, options, (err, {subject, html}) ->
-        options = _.extend _.clone(mailer_options), options,
-          from: options.send_from
+        return callback err if err
+
+        options = _.extend {}, mailer_options, {
           to: to_address
           subject: subject
           html: html
+        }, options
+
+        _.extend options,
+          from: options.send_from
           replyTo: options.reply_to
 
         mailer.sendMail options, (err, info) ->

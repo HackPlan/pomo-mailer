@@ -1,6 +1,6 @@
 {
   "name": "pomo-mailer",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Simple mailer with i18n and template engine.",
   "homepage": "https://github.com/hackplan/pomo-mailer",
   "license": "MIT",
