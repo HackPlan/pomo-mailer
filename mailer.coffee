@@ -66,8 +66,9 @@ module.exports = class Mailer
 
     Return {Promise} resolve with response from server.
   ###
-  send: (template, address, locals, options, callback) ->
+  sendMail: (template, address, locals, options, callback) ->
     @ready.then =>
+      # TODO: No template
       if @mailer.isPomoAgent and !@mailer.render
         return {
           template: template

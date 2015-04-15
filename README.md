@@ -1,4 +1,4 @@
-## pomo-mailer
+## Pomo Mailer
 Simple mailer with i18n and template engine.
 
 ## Sample
