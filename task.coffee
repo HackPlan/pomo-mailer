@@ -1,7 +1,6 @@
 {EventEmitter} = require 'events'
 moment = require 'moment-timezone'
 Mabolo = require 'mabolo'
-async = require 'async-q'
 _ = require 'lodash'
 Q = require 'q'
 
