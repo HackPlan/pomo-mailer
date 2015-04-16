@@ -1,7 +1,7 @@
 _ = require 'lodash'
 
 ###
-  Public: Internationalization manager
+  Public: Internationalization utils.
 ###
 module.exports = class I18n
   defaults:
@@ -10,20 +10,20 @@ module.exports = class I18n
   @insert: (string, params) ->
     if _.isObject params
       for name, value of params
-        string = string?.replace new RegExp("{#{name}}", 'g'), value
+        string = string?.replace new RegExp("\\{#{name}\\}", 'g'), value
 
     return string
 
   ###
     Public: Constructor
 
-    * `config` {Object}
+    * `options` {Object}
 
       * `default` (optional) {String} Default language, e.g. `zh-CN`.
 
   ###
-  constructor: (config) ->
-    @config = _.defaults config, @defaults
+  constructor: (options) ->
+    @options = _.defaults {}, options, @defaults
     @translations = {}
 
   ###
@@ -49,31 +49,36 @@ module.exports = class I18n
   ###
     Public: Create translator by language or request.
 
-    * `language` {String} or {ClientRequest}
+    * `language` {String}
     * `prefixes` {Array} or {String}
 
     Return {Function} `(name, params) -> String`.
   ###
-  translator: (language, prefixes) ->
+  translator: (language, prefixes = []) ->
     translator = (name, params) =>
       return I18n.insert @translate(name, @alternativeLanguages language), params
 
     return (name) ->
-      for prefix in [prefixes..., name]
-        fullName = "#{prefix}.#{name}"
-        result = translator fullName, arguments[1 ..]...
+      for prefix in [prefixes..., null]
+        if prefix
+          full_name = "#{prefix}.#{name}"
+        else
+          full_name = name
 
-        if result != fullName
+        result = translator full_name, [arguments...][1 ..]...
+
+        if result != full_name
           return result
 
       return name
 
   ###
-    Public: Get packaged translations by language.
+    Public: Translate name by languages.
 
-    * `language` {String}
+    * `name` {String}
+    * `languages` {Array} of {String}
 
-    Return {Object}.
+    Return {String}.
   ###
   translate: (name, languages) ->
     for language in languages
@@ -93,7 +98,7 @@ module.exports = class I18n
     Return {String}.
   ###
   translateByLanguage: (name, language) ->
-    return '' unless name
+    return undefined unless name
 
     ref = @translations
 
@@ -118,7 +123,7 @@ module.exports = class I18n
     alternatives = @languages().filter (language) ->
       return parseLanguage(language).lang == lang
 
-    return _.uniq _.compact [language, alternatives..., @config.default]
+    return _.uniq _.compact [language, alternatives..., @options.default]
 
 parseLanguage = (language) ->
   [lang, country] = language.replace('_', '-').split '-'
@@ -130,4 +135,8 @@ parseLanguage = (language) ->
 
 formatLanguage = (language) ->
   {lang, country} = parseLanguage language
-  return "#{lang}-#{country}"
+
+  if country
+    return "#{lang}-#{country}"
+  else
+    return lang

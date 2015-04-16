@@ -1,3 +1,8 @@
+## v0.2.0
+
+* Complete refactoring
+* Built-in pomo-sender
+
 ## v0.1.8(2015.3.13)
 
 * Fixbugs about options of sendMail
@@ -23,7 +28,7 @@
 
 ## v0.1.3(2014.10.13)
 
-* Fix bugs about _.extend
+* Fix bugs about extend
 * Allow #sendMail's options to overwrite nodemailer options
 
 ## v0.1.2(2014.10.10)
