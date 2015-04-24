@@ -17,7 +17,7 @@ module.exports = class I18n
   ###
     Public: Constructor
 
-    * `options` {Object}
+    * `options` (optional) {Object}
 
       * `default` (optional) {String} Default language, e.g. `zh-CN`.
 
@@ -50,7 +50,7 @@ module.exports = class I18n
     Public: Create translator by language or request.
 
     * `language` {String}
-    * `prefixes` {Array} or {String}
+    * `prefixes` (optional) {Array} or {String}
 
     Return {Function} `(name, params) -> String`.
   ###
@@ -98,7 +98,7 @@ module.exports = class I18n
     Return {String}.
   ###
   translateByLanguage: (name, language) ->
-    return undefined unless name
+    return name unless name
 
     ref = @translations
 
@@ -126,6 +126,12 @@ module.exports = class I18n
     return _.uniq _.compact [language, alternatives..., @options.default]
 
 parseLanguage = (language) ->
+  unless language
+    return {
+      lang: undefined
+      country: undefined
+    }
+
   [lang, country] = language.replace('_', '-').split '-'
 
   return {

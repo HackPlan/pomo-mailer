@@ -1,6 +1,6 @@
 {
-  "email_title": {
-    "sample-jade": "[__id__] Sample Email"
-  },
-  "welcome": "Hello, World"
+  "from": "Pomotodo <robot@pomotodo.com>",
+  "sample": {
+    "title": "Sample Email"
+  }
 }

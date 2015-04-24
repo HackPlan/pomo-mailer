@@ -58,8 +58,8 @@ describe 'i18n', ->
       test = (name, language, result) ->
         expect(i18n.translateByLanguage name, language).to.be.equal result
 
-      test '', 'en', undefined
-      test null, 'en', undefined
+      test '', 'en', ''
+      test null, 'en', null
       test 'hello', 'zh-TW', undefined
       test 'email.title', 'zh-CN', undefined
       test 'hello', 'en', 'Hello'

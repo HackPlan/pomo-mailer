@@ -1,6 +1,6 @@
 {
-  "email_title": {
-    "sample-jade": "[__id__] 示例邮件"
-  },
-  "welcome": "世界，你好"
+  "from": "番茄土豆 <robot@pomotodo.com>",
+  "sample": {
+    "title": "示例邮件"
+  }
 }
