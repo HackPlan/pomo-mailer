@@ -8,7 +8,7 @@ describe 'mailer', ->
         server: {}
         from: 'robot@pomotodo.com'
 
-      mailer.render('sample', name: 'world').then (mail) ->
+      mailer.render('sample/sample', name: 'world').then (mail) ->
         mail.should.be.eql
           subject: 'Sample Email'
           from: 'robot@pomotodo.com'
@@ -19,7 +19,7 @@ describe 'mailer', ->
         server: {}
         from: 'from'
 
-      mailer.render('sample', name: 'world').then (mail) ->
+      mailer.render('sample/sample', name: 'world').then (mail) ->
         mail.from.should.be.eql 'Pomotodo <robot@pomotodo.com>'
 
     it 'default language', ->
@@ -28,7 +28,7 @@ describe 'mailer', ->
         i18n:
           default: 'zh-CN'
 
-      mailer.render('sample', name: 'world').then (mail) ->
+      mailer.render('sample/sample', name: 'world').then (mail) ->
         mail.subject.should.be.eql '示例邮件'
 
     it 'translator and moment'
@@ -39,7 +39,7 @@ describe 'mailer', ->
       from: 'Pomotodo <robot@pomotodo.com>'
 
     it 'send to nodemailer', ->
-      mailer.sendMail('sample', 'jysperm@gmail.com', name: 'world').catch ({message}) ->
+      mailer.sendMail('sample/sample', 'jysperm@gmail.com', name: 'world').catch ({message}) ->
         message.should.have.string 'Content-Type: text/html'
         message.should.have.string 'From: Pomotodo <robot@pomotodo.com>'
         message.should.have.string 'Subject: Sample Email'

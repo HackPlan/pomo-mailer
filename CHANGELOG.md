@@ -2,6 +2,7 @@
 
 * Complete refactoring
 * Built-in pomo-sender
+* Built-in templates
 
 ## v0.1.8(2015.3.13)
 

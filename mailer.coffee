@@ -143,7 +143,7 @@ module.exports = class Mailer
       translator = @i18n.translator language, [template]
 
       mail = {
-        subject: translator (subject ? "#{template}.title"), locals
+        subject: translator (subject ? "#{template.replace /\//g, '.'}.title"), locals
         from: translator from, locals
       }
 

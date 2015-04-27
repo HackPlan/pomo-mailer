@@ -1,6 +1,8 @@
 {
   "from": "Pomotodo <robot@pomotodo.com>",
   "sample": {
-    "title": "Sample Email"
+    "sample": {
+      "title": "Sample Email"
+    }
   }
 }
