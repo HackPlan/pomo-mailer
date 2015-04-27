@@ -7,6 +7,14 @@
 
 ## Mailer
 
+## Built-in templates
+
+* Action
+* Alert
+* Billing
+
+Converted from [mailgun/transactional-email-templates](https://github.com/mailgun/transactional-email-templates).
+
 ## Queue
 
 ## Agent

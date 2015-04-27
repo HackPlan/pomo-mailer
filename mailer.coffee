@@ -137,20 +137,20 @@ module.exports = class Mailer
     Return {Promise} resolve with {subject, html, from, replyTo}.
   ###
   render: (template, locals, options, callback) ->
-    {language, timezone, from, replyTo} = _.defaults {}, options, @options
+    {language, timezone, from, replyTo, subject} = _.defaults {}, options, @options
 
     @resolve(template).then (renderer) =>
       translator = @i18n.translator language, [template]
 
       mail = {
-        subject: translator "#{template}.title", locals
+        subject: translator (subject ? "#{template}.title"), locals
         from: translator from, locals
       }
 
       if replyTo
         mail.replyTo = translator replyTo, locals
 
-      html = renderer _.defaults locals,
+      html = renderer _.defaults {}, locals,
         t: translator
         meta: mail
         moment: ->
@@ -198,6 +198,6 @@ class PomoAgent
         if err
           reject err
         else if ! (200 <= res.statusCode < 300)
-          reject new Error res.text
+          reject new Error body
         else
           resolve body

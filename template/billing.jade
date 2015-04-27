@@ -1,0 +1,50 @@
+extend base
+
+block body
+  body(itemscope='', itemtype='http://schema.org/EmailMessage', style="#{basic14} -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6; background: #f6f6f6; margin: 0;")
+    table.body-wrap(style="#{basic14} width: 100%; background: #f6f6f6; margin: 0;")
+      tr(style=basic14Margin0)
+        td(style="#{basic14} vertical-align: top; margin: 0;", valign='top')
+        td.container(width='600', style="#{basic14} vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto;", valign='top')
+          .content(style="#{basic14} max-width: 600px; display: block; margin: 0 auto; padding: 20px;")
+            table.main(width='100%', cellpadding='0', cellspacing='0', style="#{basic14} border-radius: 3px; background: #fff; margin: 0; border: 1px solid #e9e9e9;")
+              tr(style=basic14Margin0)
+                td.content-wrap.aligncenter(style="#{basic14} vertical-align: top; text-align: center; margin: 0; padding: 20px;", align='center', valign='top')
+                  table(width='100%', cellpadding='0', cellspacing='0', style=basic14Margin0)
+                    tr(style=basic14Margin0)
+                      td.content-block(style="#{basic14} vertical-align: top; margin: 0; padding: 0 0 20px;", valign='top')
+                        h1.aligncenter(style="font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; box-sizing: border-box; font-size: 32px; color: #000; line-height: 1.2; font-weight: 500; text-align: center; margin: 40px 0 0;", align='center')= title
+                    tr(style=basic14Margin0)
+                      td.content-block(style="#{basic14} vertical-align: top; margin: 0; padding: 0 0 20px;", valign='top')
+                        h2.aligncenter(style="font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif; box-sizing: border-box; font-size: 24px; color: #000; line-height: 1.2; font-weight: 400; text-align: center; margin: 40px 0 0;", align='center')= detail
+                    tr(style=basic14Margin0)
+                      td.content-block.aligncenter(style="#{basic14} vertical-align: top; text-align: center; margin: 0; padding: 0 0 20px;", align='center', valign='top')
+                        table.invoice(style="#{basic14} text-align: left; width: 80%; margin: 40px auto;")
+                          tr(style=basic14Margin0)
+                            td(style="#{basic14} vertical-align: top; margin: 0; padding: 5px 0;", valign='top')
+                              for line in address
+                                | #{line}
+                                br(style=basic14Margin0)
+                          tr(style=basic14Margin0)
+                            td(style="#{basic14} vertical-align: top; margin: 0; padding: 5px 0;", valign='top')
+                              table.invoice-items(cellpadding='0', cellspacing='0', style="#{basic14} width: 100%; margin: 0;")
+                                for product in products
+                                  tr(style=basic14Margin0)
+                                    td(style="#{basic14} vertical-align: top; border-top-width: 1px; border-top-color: #eee; border-top-style: solid; margin: 0; padding: 5px 0;", valign='top')= product.name
+                                    td.alignright(style="#{basic14} vertical-align: top; text-align: right; border-top-width: 1px; border-top-color: #eee; border-top-style: solid; margin: 0; padding: 5px 0;", align='right', valign='top')= product.price
+                                tr.total(style=basic14Margin0)
+                                  td.alignright(width='80%', style="#{basic14} vertical-align: top; text-align: right; border-top-width: 2px; border-top-color: #333; border-top-style: solid; border-bottom-color: #333; border-bottom-width: 2px; border-bottom-style: solid; font-weight: 700; margin: 0; padding: 5px 0;", align='right', valign='top')= total.name
+                                  td.alignright(style="#{basic14} vertical-align: top; text-align: right; border-top-width: 2px; border-top-color: #333; border-top-style: solid; border-bottom-color: #333; border-bottom-width: 2px; border-bottom-style: solid; font-weight: 700; margin: 0; padding: 5px 0;", align='right', valign='top')= total.price
+                    tr(style=basic14Margin0)
+                      td.content-block.aligncenter(style="#{basic14} vertical-align: top; text-align: center; margin: 0; padding: 0 0 20px;", align='center', valign='top')
+                        a(href=link, style="#{basic14} color: #348eda; text-decoration: underline; margin: 0;")= action
+                    tr(style=basic14Margin0)
+                      td.content-block.aligncenter(style="#{basic14} vertical-align: top; text-align: center; margin: 0; padding: 0 0 20px;", align='center', valign='top')= copyright
+            .footer(style="#{basic14} width: 100%; clear: both; color: #999; margin: 0; padding: 20px;")
+              table(width='100%', style=basic14Margin0)
+                tr(style=basic14Margin0)
+                  td.aligncenter.content-block(style="#{basic12} vertical-align: top; text-align: center; margin: 0; padding: 0 0 20px;", align='center', valign='top')
+                    | #{unsubscribe.before} 
+                    a(href=unsubscribe.link, style="#{basic12} color: #999; text-decoration: underline; margin: 0;")= unsubscribe.action
+                    |  #{unsubscribe.after}
+        td(style="#{basic14} vertical-align: top; margin: 0;", valign='top')

@@ -1,0 +1,18 @@
+doctype transitional
+
+- var basic = "font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box;"
+- var basic12 = basic + 'font-size: 14px;'
+- var basic14 = basic + 'font-size: 14px;'
+- var basic16 = basic + 'font-size: 16px;'
+- var basic14Margin0 = basic14 + 'margin: 0;'
+- var contentBlock = basic14 + 'vertical-align: top; margin: 0; padding: 0 0 20px;'
+
+html(xmlns='http://www.w3.org/1999/xhtml', style=basic14Margin0)
+  head
+    meta(name='viewport', content='width=device-width')
+    meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+    title= meta.subject
+    style(type='text/css')
+      include base-style.css
+      
+  block body
