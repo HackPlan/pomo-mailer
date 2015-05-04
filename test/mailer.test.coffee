@@ -1,4 +1,5 @@
 stubTransport = require 'nodemailer-stub-transport'
+
 {Mailer} = pomoMailer
 
 describe 'mailer', ->

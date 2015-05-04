@@ -1,28 +1,47 @@
 {EventEmitter} = require 'events'
+Mabolo = require 'mabolo'
 moment = require 'moment-timezone'
 async = require 'async-q'
 _ = require 'lodash'
 Q = require 'q'
 
+###
+  Public: Mail queue based on MongoDB.
+###
 module.exports = class Queue extends EventEmitter
   defaults:
-    mongodb: 'mongodb://localhost/pomo-mailer'
     mailer: null
+    mongodb: 'mongodb://localhost/pomo-mailer'
 
     timeout: 60 * 1000
     delay: 60 * 1000
     threads: 5
 
-    local_time_start: 8
-    local_time_end: 16
+    local_time_start: 0
+    local_time_end: 24
 
     logger: console
 
+  ###
+    Public: Constructor
+
+    * `options` {Object}
+
+      * `mailer` {Mailer}
+      * `mongodb` (optional) {String} Uri of MongoDB.
+      * `timeout` (optional) {Number} Default 60 * 1000.
+      * `delay` (optional) {Number} Default 60 * 1000.
+      * `threads` (optional) {Number} Default 5.
+      * `local_time_start` (optional) {Number}
+      * `local_time_end` (optional) {Number}
+      * `logger` (optional) {Object} Default `console`
+
+  ###
   constructor: (options) ->
-    @options = _.defaults options, @defualts
+    @options = _.defaults options, @defaults
     @mailer = @options.mailer
 
-    @mabolo = new Mabolo @mongodb
+    @mabolo = new Mabolo @options.mongodb
 
     @QueueModel = @mabolo.model 'Queue',
       address:
@@ -48,11 +67,15 @@ module.exports = class Queue extends EventEmitter
       @QueueModel.ensureIndex 'options.timezone': 1
       @QueueModel.ensureIndex unique_id: 1,
         unique: true
+        sparse: true
         dropDups: true
     ]
 
     @on 'sent', ({address, options: {language, timezone}}) ->
-      @logger?.log "[Queue] #{address} (#{language} @ #{timezone})"
+      @logger?.log "[Queue:sent] #{address} (#{language} @ #{timezone})"
+
+    @on 'error', (err) ->
+      @logger?.error '[Queue:error]', err
 
     @queue = async.queue =>
       @worker arguments...
@@ -63,13 +86,34 @@ module.exports = class Queue extends EventEmitter
 
     @onQueueEmpty()
 
+  ###
+    Public: Pause queue.
+  ###
   pause: ->
     @paused = true
 
+  ###
+    Public: Resume queue.
+  ###
   resume: ->
     @paused = false
     @onQueueEmpty()
 
+  ###
+    Public: Push mail into queue.
+
+    * `mail` {Object}
+
+      * `address` {String} To address.
+      * `template` (optional) {String} Template name.
+      * `unique_id` (optional) {String} Unique id.
+      * `locals` (optional) {Object} Options pass to template.
+      * `options` (optional) {Object} Overwrite {Mailer} options.
+
+    * `callback` (optional) {Function}
+
+    Return {Promise} resolve with queued mail.
+  ###
   pushMail: ({template, unique_id, address, locals, options}, callback) ->
     @QueueModel.create
       address: address
@@ -78,11 +122,13 @@ module.exports = class Queue extends EventEmitter
       template: template
       locals: locals
       options: options
-    .then (mail) =>
+    .tap (mail) =>
       if @queue.length() == 0
-        @fetchMail()
+        @onQueueEmpty()
+        return
     .nodeify callback
 
+  # Private: Fill the workers.
   onQueueEmpty: ->
     if @paused
       return
@@ -95,11 +141,12 @@ module.exports = class Queue extends EventEmitter
           @queue.push mail
           return
         else
-          return Q.delay @delay
+          return Q.delay @options.delay
 
+  # Private: Fetch mail form MongoDB atomically.
   fetchMail: ->
     @ready.then =>
-      @getAvailableTimezones (available_timezones) =>
+      @getAvailableTimezones().then (available_timezones) =>
         @QueueModel.findOneAndUpdate
           finished_at:
             $exists: false
@@ -130,6 +177,7 @@ module.exports = class Queue extends EventEmitter
           sort:
             created_at: 1
 
+  # Private: Send mail use {Mailer}.
   worker: (mail) ->
     {template, address, locals, options} = mail
 
@@ -141,6 +189,10 @@ module.exports = class Queue extends EventEmitter
           response: res
           finished_at: new Date()
 
+    .catch (err) ->
+      @emit 'error', err, mail
+
+  # Private: Get available timezones
   getAvailableTimezones: ->
     @QueueModel.aggregate([
       $group:
