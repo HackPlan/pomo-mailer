@@ -10,6 +10,9 @@ Q = require 'q'
 
 I18n = require './i18n'
 
+###
+  Public: Render multi-language mail with template.
+###
 module.exports = class Mailer
   defualts:
     server:
