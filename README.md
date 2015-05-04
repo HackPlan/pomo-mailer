@@ -9,8 +9,6 @@
 ## Mailer
 
 ```coffee
-{Mailer} = require 'pomo-mailer'
-
 mailer = new Mailer
   server:
     service: 'Postmark'
@@ -27,6 +25,36 @@ mailer.sendMail 'action', 'jysperm@gmail.com',
 .then console.log
 .catch console.error
 ```
+
+## Queue
+
+```coffee
+queue = new Queue
+  mailer: mailer
+  mongodb: 'mongodb://localhost/pomo-mailer-test'
+
+queue.pushMail
+  template: 'billing'
+  address: 'jysperm@gmail.com'
+  locals: generateBilling()
+.then console.log
+.catch console.error
+```
+
+## Agent
+
+```coffee
+agent = new Agent
+  queue: queue
+  users:
+    jysperm: 'pass'
+
+app = express()
+app.use bodyParser.json()
+app.use agent.express()
+```
+
+## Task
 
 ## Built-in templates
 
@@ -67,9 +95,3 @@ Common fields:
 
   * `name` {String}
   * `price` {String}
-
-## Queue
-
-## Agent
-
-## Task

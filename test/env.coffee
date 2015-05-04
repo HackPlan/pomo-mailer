@@ -13,3 +13,10 @@ _.extend global,
 
 chai.should()
 chai.config.includeStack = true
+
+global.mockMailer = (storage) ->
+  return {
+    sendMail: (template, address, locals, options) ->
+      storage.push {template, address, locals, options}
+      return Q()
+  }

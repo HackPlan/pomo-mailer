@@ -6,14 +6,11 @@ Q = require 'q'
 describe 'queue', ->
   mails = []
   QueueModel = null
-  mailer = null
   queue = null
 
   before ->
-    mailer = mockMailer mails
-
     queue = new Queue
-      mailer: mailer
+      mailer: mockMailer mails
       mongodb: 'mongodb://localhost/pomo-mailer-test'
 
   before ->
@@ -33,7 +30,7 @@ describe 'queue', ->
           name: 'world'
 
     after ->
-      Q().then ->
+      Q.delay(10).then ->
         mails[0].address.should.be.equal 'jysperm@gmail.com'
         mails[1].template.should.be.equal 'sample/sample'
 
@@ -55,10 +52,3 @@ describe 'queue', ->
     it 'fetch mail again', ->
       queue.fetchMail().then (mail) ->
         expect(mail).to.not.exists
-
-mockMailer = (storage) ->
-  return {
-    sendMail: (template, address, locals, options) ->
-      storage.push {template, address, locals, options}
-      return Q()
-  }
