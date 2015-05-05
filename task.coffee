@@ -1,6 +1,6 @@
 {EventEmitter} = require 'events'
-moment = require 'moment-timezone'
 Mabolo = require 'mabolo'
+moment = require 'moment-timezone'
 _ = require 'lodash'
 Q = require 'q'
 
@@ -13,6 +13,7 @@ module.exports = class Task extends EventEmitter
     mongodb: 'mongodb://localhost/pomo-mailer'
     timeout: 600 * 1000
     nextGroup: -> 3600 * 1000
+    logger: console
 
   ###
     Event: `error`
@@ -33,6 +34,7 @@ module.exports = class Task extends EventEmitter
       * `worker` {Function} `(task) -> Promise`
       * `timeout` (optional) {Number} Default `600 * 1000`.
       * `nextGroup` (optional) {Function} `-> Number|Date|Moment`, default `-> 3600 * 1000`.
+      * `logger` (optional) {Object} Default `console`
 
   ###
   constructor: (options) ->
@@ -54,9 +56,8 @@ module.exports = class Task extends EventEmitter
       finished_at: Date
 
     @TaskModel.ensureIndex
-      category: 1
       name: 1
-      group_name: 1
+      group: 1
     ,
       unique: true
       dropDups: true
@@ -65,6 +66,9 @@ module.exports = class Task extends EventEmitter
     , (err) =>
       @emit 'error', err,
         when: 'ensureIndex'
+
+    @on 'error', (err) =>
+      @logger.log err, err.context
 
   ###
     Public: Stop task.
@@ -81,7 +85,7 @@ module.exports = class Task extends EventEmitter
     .done (task) =>
       unless task
         @TaskModel.create
-          name: name
+          name: @name
           group: group
           progress_at: new Date()
         .done (task) =>
@@ -90,8 +94,9 @@ module.exports = class Task extends EventEmitter
           if err.message.match /duplicate/
             setImmediate @triggerTask
           else
-            @emit 'error', err,
-              when: 'createTask'
+            @emit 'error', _.extend err,
+              content:
+                when: 'createTask'
     , (err) =>
       @emit 'error', err,
         when: 'findTask'
@@ -106,22 +111,25 @@ module.exports = class Task extends EventEmitter
           progress: progress
           progress_at: new Date()
       .catch (err) =>
-        @emit 'error', err,
-          when: 'updateProgress'
-          task: task
-          progress: progress
+        @emit 'error', _.extend err,
+          content:
+            when: 'updateProgress'
+            task: task
+            progress: progress
     .done =>
       task.update
         $set:
           finished_at: new Date()
       .catch (err) =>
         @emit 'error', err,
-          when: 'finishTask'
-          task: task
+          content:
+            when: 'finishTask'
+            task: task
     , (err) =>
       @emit 'error', err,
-        when: 'runTask'
-        task: task
+        content:
+          when: 'runTask'
+          task: task
 
   resumeTasks: ->
     @TaskModel.findOneAndUpdate
@@ -134,11 +142,13 @@ module.exports = class Task extends EventEmitter
       $set:
         progress_at: new Date()
     .done (task) =>
-      @runTask task
-      @resumeTasks()
+      if task
+        @runTask task
+        @resumeTasks()
     , (err) =>
       @emit 'error', err,
-        when: 'resumeTasks'
+        content:
+          when: 'resumeTasks'
 
   waitNextGroup: ->
     next = @nextGroup()

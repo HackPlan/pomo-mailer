@@ -6,6 +6,10 @@
 * Built-in some useful templates.
 * Mail agent using HTTP API.
 
+```coffee
+{Mailer, Queue, Agent, Task} = require 'pomo-mailer'
+```
+
 ## Mailer
 
 ```coffee
@@ -55,6 +59,26 @@ app.use agent.express()
 ```
 
 ## Task
+
+```coffee
+task = new Task
+  name: 'weekly'
+  worker: worker
+  groupBy: -> moment().format 'YYYY-W'
+  nextGroup: -> moment().startOf('week').add(weeks: 1)
+
+worker = (task) ->
+  return Q.Promise (resolve, reject, notify) ->
+    db.accounts.find
+      _id:
+        $gte: task.progress ? null
+    .sort
+      _id: true
+    .then (accounts) ->
+      async.each accounts, ({_id, email, generateWeekly}) ->
+        notify _id
+        mailer.sendMail 'weekly', email, generateWeekly()
+```
 
 ## Built-in templates
 

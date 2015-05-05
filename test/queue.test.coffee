@@ -1,6 +1,3 @@
-_ = require 'lodash'
-Q = require 'q'
-
 {Queue} = pomoMailer
 
 describe 'queue', ->
@@ -11,7 +8,7 @@ describe 'queue', ->
   before ->
     queue = new Queue
       mailer: mockMailer mails
-      mongodb: 'mongodb://localhost/pomo-mailer-test'
+      mongodb: mongodb_uri
 
   before ->
     {QueueModel} = queue
