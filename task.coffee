@@ -64,11 +64,12 @@ module.exports = class Task extends EventEmitter
     .done =>
       @triggerTask()
     , (err) =>
-      @emit 'error', err,
-        when: 'ensureIndex'
+      @emit 'error', _.extend err,
+        context:
+          when: 'createTask'
 
     @on 'error', (err) =>
-      @logger.log err, err.context
+      @logger?.log err, err.context
 
   ###
     Public: Stop task.
@@ -95,7 +96,7 @@ module.exports = class Task extends EventEmitter
             setImmediate @triggerTask
           else
             @emit 'error', _.extend err,
-              content:
+              context:
                 when: 'createTask'
     , (err) =>
       @emit 'error', err,
@@ -112,7 +113,7 @@ module.exports = class Task extends EventEmitter
           progress_at: new Date()
       .catch (err) =>
         @emit 'error', _.extend err,
-          content:
+          context:
             when: 'updateProgress'
             task: task
             progress: progress
@@ -122,12 +123,12 @@ module.exports = class Task extends EventEmitter
           finished_at: new Date()
       .catch (err) =>
         @emit 'error', err,
-          content:
+          context:
             when: 'finishTask'
             task: task
     , (err) =>
       @emit 'error', err,
-        content:
+        context:
           when: 'runTask'
           task: task
 
@@ -147,7 +148,7 @@ module.exports = class Task extends EventEmitter
         @resumeTasks()
     , (err) =>
       @emit 'error', err,
-        content:
+        context:
           when: 'resumeTasks'
 
   waitNextGroup: ->
