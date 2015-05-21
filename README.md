@@ -73,11 +73,12 @@ worker = (task) ->
       _id:
         $gte: task.progress ? null
     .sort
-      _id: true
+      _id: 1
     .then (accounts) ->
       async.each accounts, ({_id, email, generateWeekly}) ->
         notify _id
         mailer.sendMail 'weekly', email, generateWeekly()
+      .then resolve, reject
 ```
 
 ## Built-in templates

@@ -178,11 +178,11 @@ module.exports = class Mailer
         return @templates_cache[template]
       else
         filename = path.resolve @options.templates, "#{template}.jade"
-
         fs.read(filename).then (source) ->
           return jade.compile source.toString(),
             filename: filename
-
+    .tap (renderer) =>
+      @templates_cache = renderer
     .nodeify callback
 
 class PomoAgent
