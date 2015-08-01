@@ -1,3 +1,8 @@
+## v0.2.1
+
+* Fixbugs in mailer and task
+* Lock dependencies version
+
 ## v0.2.0
 
 * Complete refactoring

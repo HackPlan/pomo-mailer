@@ -76,6 +76,7 @@ module.exports = class Task extends EventEmitter
   ###
   stop: ->
     clearTimeout @timeoutId
+    @stopped = true
 
   triggerTask: ->
     group = @groupBy()
@@ -106,6 +107,9 @@ module.exports = class Task extends EventEmitter
     @waitNextGroup()
 
   runTask: (task) ->
+    if @stopped
+      return
+
     Q(@worker task).progress (progress) ->
       task.update
         $set:

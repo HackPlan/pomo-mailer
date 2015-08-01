@@ -115,14 +115,15 @@ module.exports = class Mailer
 
       else
         @render(template, locals, options).then (mail) ->
-          return defaultOptions mail
+          return defaultOptions _.extend mail,
+            to: address
 
     .then (mail) =>
       return Q.Promise (resolve, reject) =>
         @mailer.sendMail mail, (err, res) ->
           if err
             reject err
-          else if /^\s+250\b/.test res.response
+          else if /^\s*250\b/.test res.response
             resolve res
           else
             reject new Error res.response
