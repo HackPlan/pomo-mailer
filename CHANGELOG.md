@@ -1,3 +1,9 @@
+## v0.2.2(2015.11.16)
+
+* Fixbugs in task
+* Upgrade dependencies
+* Tested on Node.js 0.12 and 4.2
+
 ## v0.2.1
 
 * Fixbugs in mailer and task
