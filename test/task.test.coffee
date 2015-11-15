@@ -17,7 +17,7 @@ describe 'task', ->
         name: 'sample'
         mongodb: mongodb_uri
         groupBy: -> (new Date().getMilliseconds() / 10).toFixed()
-        nextGroup: -> 5
+        nextGroup: -> 50
         worker: ->
           times += 1
 
@@ -26,5 +26,5 @@ describe 'task', ->
             done()
 
     it 'should be stopped', ->
-      Q.delay(50).then ->
+      Q.delay(300).then ->
         times.should.be.equal 3

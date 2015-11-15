@@ -27,7 +27,7 @@ describe 'queue', ->
           name: 'world'
 
     after ->
-      Q.delay(10).then ->
+      Q.delay(50).then ->
         mails[0].address.should.be.equal 'jysperm@gmail.com'
         mails[1].template.should.be.equal 'sample/sample'
 

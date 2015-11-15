@@ -12,7 +12,7 @@ describe 'agent', ->
     before ->
       queue = new Queue
         mailer: mockMailer mails
-        mongodb: 'mongodb://localhost/pomo-mailer-test'
+        mongodb: mongodb_uri
 
       agent = new Agent
         queue: queue
@@ -44,6 +44,6 @@ describe 'agent', ->
       .end done
 
     after ->
-      Q.delay(10).then ->
+      Q.delay(50).then ->
         mails.length.should.be.equal 1
         mails[0].locals.name.should.be.equal 'agent'
