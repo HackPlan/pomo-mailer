@@ -94,7 +94,7 @@ module.exports = class Task extends EventEmitter
           @runTask task
         , (err) =>
           if err.message.match /duplicate/
-            setImmediate @triggerTask
+            setImmediate @triggerTask.bind(@)
           else
             @emit 'error', _.extend err,
               context:
