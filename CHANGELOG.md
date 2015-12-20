@@ -1,3 +1,6 @@
+## v0.2.3(2015.12.20)
+* Fixbugs about resolve renderer
+
 ## v0.2.2(2015.11.16)
 
 * Fixbugs in task
