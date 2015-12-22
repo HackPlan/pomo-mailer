@@ -1,3 +1,7 @@
+## v0.2.6(2015.12.22)
+
+* Fix I18n.insert
+
 ## v0.2.5(2015.12.22)
 
 * Support locals key is object

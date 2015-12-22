@@ -13,7 +13,9 @@ module.exports = class I18n
     while (match = regex.exec(string)) isnt null
       value = dottie.get params, match[1]
       if value
-        string = string?.replace match[0], value
+        string = string.replace match[0], value
+      else
+        break
     return string
 
   ###

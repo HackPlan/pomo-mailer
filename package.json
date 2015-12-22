@@ -1,6 +1,6 @@
 {
   "name": "pomo-mailer",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Mail Renderer, Mail Queue, Task Manager",
   "homepage": "https://github.com/hackplan/pomo-mailer",
   "license": "MIT",
