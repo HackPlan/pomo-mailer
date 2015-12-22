@@ -1,4 +1,5 @@
 _ = require 'lodash'
+dottie = require 'dottie'
 
 ###
   Public: Internationalization utils.
@@ -8,10 +9,11 @@ module.exports = class I18n
     default: null
 
   @insert: (string, params) ->
-    if _.isObject params
-      for name, value of params
-        string = string?.replace new RegExp("\\{#{name}\\}", 'g'), value
-
+    regex = /{(.+)}/
+    while (match = regex.exec(string)) isnt null
+      value = dottie.get params, match[1]
+      if value
+        string = string?.replace match[0], value
     return string
 
   ###

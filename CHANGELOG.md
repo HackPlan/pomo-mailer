@@ -1,3 +1,7 @@
+## v0.2.5(2015.12.22)
+
+* Support locals key is object
+
 ## v0.2.4(2015.12.21)
 
 * Fixbugs about resolve renderer
