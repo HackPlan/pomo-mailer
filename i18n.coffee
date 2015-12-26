@@ -9,13 +9,14 @@ module.exports = class I18n
     default: null
 
   @insert: (string, params) ->
-    regex = /{(.+)}/
-    while (match = regex.exec(string)) isnt null
-      value = dottie.get params, match[1]
-      if value
-        string = string.replace match[0], value
-      else
-        break
+    replace_regex = /{(.+?)}/g
+    replace_matchs = _.uniq string.match(replace_regex)
+    for replace_match in replace_matchs
+      variable_match = replace_regex.exec(replace_match)
+      if variable_match
+        value = dottie.get params, variable_match[1]
+        if value
+          string = string.replace replace_match, value
     return string
 
   ###
