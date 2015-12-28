@@ -125,8 +125,9 @@ describe 'i18n', ->
     it 'insert parameter', ->
       t = i18n.translator 'en'
 
-      t('email.body').should.be.equal 'Email to {to}'
-      t('email.body', to: 'jysperm').should.be.equal 'Email to jysperm'
+      t('email.body').should.be.equal 'Email from {from} to {to}'
+      t('email.body', to: 'jysperm').should.be.equal 'Email from {from} to jysperm'
+      t('email.body', to: 'jysperm', from: 'faceair').should.be.equal 'Email from faceair to jysperm'
 
     it 'with prefixes', ->
       t = i18n.translator 'en', ['email']
@@ -142,7 +143,7 @@ addTranslations = (i18n) ->
 
     email:
       title: 'Email Title'
-      body: 'Email to {to}'
+      body: 'Email from {from} to {to}'
 
   i18n.addTranslations 'en-US',
     hello: 'Hello'

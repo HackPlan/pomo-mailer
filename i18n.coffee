@@ -9,10 +9,9 @@ module.exports = class I18n
     default: null
 
   @insert: (string, params) ->
-    replace_regex = /{(.+?)}/g
-    replace_matchs = _.uniq string.match(replace_regex)
+    replace_matchs = _.uniq string.match(/{(.+?)}/g)
     for replace_match in replace_matchs
-      variable_match = replace_regex.exec(replace_match)
+      variable_match = /{(.+?)}/g.exec(replace_match)
       if variable_match
         value = dottie.get params, variable_match[1]
         if value
