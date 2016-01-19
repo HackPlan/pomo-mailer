@@ -6,7 +6,7 @@ Q = require 'q'
 
 _.extend global,
   mongodb_uri: 'mongodb://localhost/pomo-mailer-test'
-  pomoMailer: require '../index'
+  pomoMailer: require '..'
   expect: chai.expect
   Q: Q
   _: _
