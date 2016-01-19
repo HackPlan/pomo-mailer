@@ -1,3 +1,7 @@
+## v0.2.10(2015.1.20)
+
+* Upgrade Mabolo to 0.3.5
+
 ## v0.2.9(2015.1.19)
 
 * Compile sources to JavaScript
