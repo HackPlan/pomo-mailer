@@ -1,3 +1,7 @@
+## v0.2.9(2015.1.19)
+
+* Compile sources to JavaScript
+
 ## v0.2.8(2015.12.26)
 
 * Fix I18n.insert
