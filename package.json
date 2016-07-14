@@ -1,6 +1,6 @@
 {
   "name": "pomo-mailer",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Mail Renderer, Mail Queue, Task Manager",
   "homepage": "https://github.com/hackplan/pomo-mailer",
   "license": "MIT",
@@ -36,7 +36,7 @@
     "lodash": "3.10.1",
     "mabolo": "0.3.5",
     "moment-timezone": "0.4.1",
-    "nodemailer": "1.10.0",
+    "nodemailer": "2.5.0",
     "q": "1.4.1",
     "q-io": "1.13.1",
     "request": "2.65.0",

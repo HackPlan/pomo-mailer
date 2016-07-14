@@ -46,6 +46,16 @@ describe 'mailer', ->
         message.should.have.string 'Subject: Sample Email'
         message.should.have.string '\r\n<p>Sample Email</p><p>Hello world</p>'
 
+    it 'send to nodemailer with cc support', ->
+      mailer.sendMail('sample/sample', 'jysperm@gmail.com', name: 'world', {
+        nodemailer: {
+          cc: ["Yeechan Lu <orzfly@example.com>"]
+        }
+      }).catch ({message}) ->
+        message.should.have.string 'To: jysperm@gmail.com'
+        message.should.have.string 'Cc: Yeechan Lu <orzfly@example.com>'
+        message.should.have.string '\r\n<p>Sample Email</p><p>Hello world</p>'
+
     it 'send to agent'
 
     it 'send to agent without template'
