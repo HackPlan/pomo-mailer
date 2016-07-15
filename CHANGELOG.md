@@ -1,3 +1,7 @@
+## v0.3.0(2016.7.15)
+
+* Sending with profiles!
+
 ## v0.2.11(2016.7.14)
 
 * Upgrade node-mailer to 0.2.5
