@@ -59,3 +59,60 @@ describe 'mailer', ->
     it 'send to agent'
 
     it 'send to agent without template'
+
+  describe 'sendMail with profiles', ->
+    logs = []
+
+    resetLogs = ->
+      logs = []
+
+    createTransport = (name) ->
+      transport = stubTransport()
+      transport.name = "#{name}Stub"
+      transport.on 'end', (info) ->
+        info.name = name
+        logs.push info
+      return transport
+
+    mailer = new Mailer
+      server: createTransport("default")
+      from: 'Pomotodo <robot@pomotodo.com>'
+      profiles:
+        trigger: [{
+          server: createTransport("trigger-domestic")
+          match:
+            type: "suffix"
+            patterns: ["cn", "cn-example.com"]
+        }]
+
+        bulk: []
+
+    describe 'profile "trigger"', ->
+      it 'send to trigger-domestic with @cn-example.com', ->
+        resetLogs()
+        mailer.sendMail('sample/sample', 'test@cn-example.com', { name: 'world' }, { profile: 'trigger' }).catch ({message}) ->
+          message.should.have.string '\r\n<p>Sample Email</p><p>Hello world</p>'
+          logs.length.should.be.eql 1
+          logs[0].name.should.be.eql 'trigger-domestic'
+
+      it 'send to trigger-domestic with @example.cn', ->
+        resetLogs()
+        mailer.sendMail('sample/sample', 'test@example.cn', { name: 'world' }, { profile: 'trigger' }).catch ({message}) ->
+          message.should.have.string '\r\n<p>Sample Email</p><p>Hello world</p>'
+          logs.length.should.be.eql 1
+          logs[0].name.should.be.eql 'trigger-domestic'
+
+      it 'send to default with @example.com', ->
+        resetLogs()
+        mailer.sendMail('sample/sample', 'test@example.com', { name: 'world' }, { profile: 'trigger' }).catch ({message}) ->
+          message.should.have.string '\r\n<p>Sample Email</p><p>Hello world</p>'
+          logs.length.should.be.eql 1
+          logs[0].name.should.be.eql 'default'
+
+    describe 'profile "bulk"', ->
+      it 'send to default with @example.cn', ->
+        resetLogs()
+        mailer.sendMail('sample/sample', 'test@example.cn', { name: 'world' }, { profile: 'bulk' }).catch ({message}) ->
+          message.should.have.string '\r\n<p>Sample Email</p><p>Hello world</p>'
+          logs.length.should.be.eql 1
+          logs[0].name.should.be.eql 'default'

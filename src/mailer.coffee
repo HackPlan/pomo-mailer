@@ -67,10 +67,21 @@ module.exports = class Mailer
 
     if !options?.server
       console.log 'Warning: Required options.server'
-    else if options.server.service == 'PomoAgent'
-      @mailer = new PomoAgent @options.server
     else
-      @mailer = nodemailer.createTransport @options.server
+      @mailer = @_createMailer @options.server
+
+    @profiles = {}
+    
+    if _.isObject(@options.profiles)
+      for profileName, profileConfig of @options.profiles
+        @profiles[profileName] = profile =
+          name: profileName
+          mailers: []
+
+        for config in profileConfig
+          profile.mailers.push
+            config: config
+            mailer: @_createMailer(config.server || {})
 
     @ready = fs.list(path.resolve @options.locales).then (filenames) =>
       for filename in filenames
@@ -92,12 +103,19 @@ module.exports = class Mailer
     defaultOptions = (explicit) =>
       return _.defaults {}, explicit, options?.nodemailer, @options.nodemailer
 
+    mailer = @mailer
+
     Q().then =>
       unless validator.isEmail address
         throw new Error 'Invalid email address ' + address
 
+      if options?.profile && (profile = @profiles[options?.profile])
+        @_doMatch(address, profile).then (result) ->
+          mailer = result
+
+    .then =>
       if !template
-        if @mailer.isPomoAgent and options.subject and (options.html or options.text)
+        if mailer.isPomoAgent and options.subject and (options.html or options.text)
           return {
             address: address
             options: defaultOptions()
@@ -105,7 +123,7 @@ module.exports = class Mailer
         else
           throw new Error 'Subject or content is empty without template'
 
-      else if @mailer.isPomoAgent and !@mailer.render
+      else if mailer.isPomoAgent and !mailer.render
         return {
           template: template
           address: address
@@ -120,7 +138,7 @@ module.exports = class Mailer
 
     .then (mail) =>
       return Q.Promise (resolve, reject) =>
-        @mailer.sendMail mail, (err, res) ->
+        mailer.sendMail mail, (err, res) ->
           if err
             reject err
           else if /^\s*250\b/.test res.response
@@ -186,6 +204,44 @@ module.exports = class Mailer
           return renderer
     .nodeify callback
 
+  ###
+    Private: Create mailer from config.
+  ###
+  _createMailer: (config) ->
+    if config.service == 'PomoAgent'
+      new PomoAgent config
+    else
+      nodemailer.createTransport config
+
+  ###
+    Private: Return a matched mailer
+  ###
+
+  _doMatch: (address, profile) ->
+    for { config, mailer } in profile.mailers
+      matcher = -> false
+
+      if _.isFunction(config.match)
+        matcher = config.match
+      else if @_matchers[config.match.type]
+        matcher = @_matchers[config.match.type]
+
+      if matcher(address, config.match)
+        return Q(mailer)
+
+    return Q(@mailer)
+
+  _matchers:
+    suffix: (address, config) ->
+      domain = getDomainPart(address)
+
+      for pattern in config.patterns
+        pat = pattern.toLowerCase()
+        return true if domain == pat
+        return true if domain.slice(-pat.length - 1) == "." + pat
+
+      return false
+
 class PomoAgent
   isPomoAgent: true
 
@@ -205,3 +261,6 @@ class PomoAgent
           reject new Error body
         else
           resolve body
+
+getDomainPart = (address) ->
+    address.substring(address.indexOf('@') + 1).toLowerCase()
